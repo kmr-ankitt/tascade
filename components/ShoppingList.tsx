@@ -1,6 +1,12 @@
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 
-export default function ShoppingList({ name }: { name: string }) {
+export default function ShoppingList({
+  name,
+  isCompleted,
+}: {
+  name: string;
+  isCompleted?: boolean;
+}) {
   const handleDelete = () => {
     Alert.alert("Delete", `Are you sure you want to delete ${name}?`, [
       {
@@ -15,14 +21,51 @@ export default function ShoppingList({ name }: { name: string }) {
     ]);
   };
   return (
-    <View className="border-red-500 border-b-2 p-2 px-5 w-screen flex-row justify-between items-center">
-      <Text className="text-lg">{name}</Text>
+    <View
+      style={{
+        borderColor: "red",
+        borderBottomWidth: 2,
+        padding: 2,
+        paddingHorizontal: 20,
+        width: "100%",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        backgroundColor: isCompleted ? "#D3D3D3" : "",
+      }}
+    >
+      {isCompleted ? (
+        <Text
+          style={{
+            fontSize: 18,
+            textDecorationLine: "line-through",
+            color: "#a1a1ad",
+          }}
+        >
+          {name}
+        </Text>
+      ) : (
+        <Text style={{ fontSize: 18 }}>{name}</Text>
+      )}
       <TouchableOpacity
         onPress={handleDelete}
         activeOpacity={0.8}
-        className="bg-zinc-900 p-2 rounded-md"
+        style={
+          isCompleted
+            ? { backgroundColor: "#a1a1ad", padding: 2, borderRadius: 4 }
+            : { backgroundColor: "#18181b", padding: 2, borderRadius: 4 }
+        }
       >
-        <Text className="text-zinc-200 font-bold uppercase h-auto tracking-wider">
+        <Text
+          style={{
+            color: "#e4e4e7",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            lineHeight: 20,
+            letterSpacing: 1,
+            textDecorationLine: isCompleted ? "line-through" : "none",
+          }}
+        >
           Delete
         </Text>
       </TouchableOpacity>
