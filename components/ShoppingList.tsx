@@ -1,3 +1,4 @@
+import { AntDesign, Feather } from "@expo/vector-icons";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 export default function ShoppingList({
@@ -23,9 +24,9 @@ export default function ShoppingList({
   return (
     <View
       style={{
-        borderColor: "red",
+        borderColor: "#1a759f",
         borderBottomWidth: 2,
-        padding: 2,
+        paddingBlock: 20,
         paddingHorizontal: 20,
         width: "100%",
         flexDirection: "row",
@@ -34,40 +35,26 @@ export default function ShoppingList({
         backgroundColor: isCompleted ? "#D3D3D3" : "",
       }}
     >
-      {isCompleted ? (
-        <Text
-          style={{
-            fontSize: 18,
-            textDecorationLine: "line-through",
-            color: "#a1a1ad",
-          }}
-        >
-          {name}
-        </Text>
-      ) : (
-        <Text style={{ fontSize: 18 }}>{name}</Text>
-      )}
-      <TouchableOpacity
-        onPress={handleDelete}
-        activeOpacity={0.8}
-        style={
-          isCompleted
-            ? { backgroundColor: "#a1a1ad", padding: 2, borderRadius: 4 }
-            : { backgroundColor: "#18181b", padding: 2, borderRadius: 4 }
-        }
+      <Feather
+        name={!isCompleted ? `circle` : `check-circle`}
+        size={20}
+        color={"#1a759f"}
+      />
+      <Text
+        style={{
+          fontSize: 22,
+          textDecorationLine: isCompleted ? "line-through" : "none",
+          color: isCompleted ? "#a1a1ad" : "",
+        }}
       >
-        <Text
-          style={{
-            color: "#e4e4e7",
-            fontWeight: "bold",
-            textTransform: "uppercase",
-            lineHeight: 20,
-            letterSpacing: 1,
-            textDecorationLine: isCompleted ? "line-through" : "none",
-          }}
-        >
-          Delete
-        </Text>
+        {name}
+      </Text>
+      <TouchableOpacity onPress={handleDelete}>
+        <AntDesign
+          name="closecircle"
+          size={20}
+          color={!isCompleted ? "#ee6055" : "#a1a1ad"}
+        />
       </TouchableOpacity>
     </View>
   );
