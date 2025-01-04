@@ -24,7 +24,7 @@ const testList: ShoppingListItemType[] = Array.from(
 export default function App() {
   const [item, setItem] = useState("");
   const [ShoppingItemList, setShoppingList] =
-    useState<ShoppingListItemType[]>(testList);
+    useState<ShoppingListItemType[]>(initalList);
 
   const handleSumbit = () => {
     if (item) {
@@ -39,8 +39,8 @@ export default function App() {
   return (
     <FlatList
       data={ShoppingItemList}
-      style={styles.container}
-      contentContainerStyle={{ alignItems: "center" }}
+      style={[styles.container, { width: "100%" }]}
+      contentContainerStyle={{ width: "100%", paddingHorizontal: 20 }}
       stickyHeaderIndices={[0]}
       renderItem={({ item }) => <ShoppingList name={item.name} />}
       ListEmptyComponent={() => (
@@ -49,21 +49,24 @@ export default function App() {
         </View>
       )}
       ListHeaderComponent={
-        <TextInput
-          placeholder="Eg. Add Coffee"
-          value={item}
-          onChangeText={setItem}
-          onSubmitEditing={handleSumbit}
-          style={{
-            borderColor: "#808080",
-            borderWidth: 1,
-            fontSize: 18,
-            marginVertical: 20,
-            borderRadius: 50,
-            paddingHorizontal: 140,
-            paddingTop: 20,
-          }}
-        />
+        <View style={{ paddingTop: 20, width: "100%" }}>
+          <TextInput
+            placeholder="Eg. Add Coffee"
+            value={item}
+            onChangeText={setItem}
+            onSubmitEditing={handleSumbit}
+            style={{
+              borderColor: "#808080",
+              borderWidth: 1,
+              fontSize: 18,
+              marginVertical: 20,
+              borderRadius: 50,
+              alignItems: "center",
+              padding: 20,
+              width: "100%",
+            }}
+          />
+        </View>
       }
     />
   );
