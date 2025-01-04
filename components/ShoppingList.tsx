@@ -26,7 +26,7 @@ export default function ShoppingList({
       style={{
         borderColor: "#1a759f",
         borderBottomWidth: 2,
-        paddingBlock: 20,
+        paddingBlock: 18,
         paddingHorizontal: 20,
         width: "100%",
         flexDirection: "row",

@@ -1,5 +1,4 @@
-import { StatusBar } from "expo-status-bar";
-import { ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import "../global.css";
 import ShoppingList from "../components/ShoppingList";
 import { useState } from "react";
@@ -14,11 +13,18 @@ const initalList: ShoppingListItemType[] = [
   { id: "2", name: "Tea" },
   { id: "3", name: "Chocolates" },
 ];
+const testList: ShoppingListItemType[] = Array.from(
+  { length: 500 },
+  (_, index) => ({
+    id: (index + 1).toString(),
+    name: `Item ${index + 1}`,
+  })
+);
 
 export default function App() {
   const [item, setItem] = useState("");
   const [ShoppingItemList, setShoppingList] =
-    useState<ShoppingListItemType[]>(initalList);
+    useState<ShoppingListItemType[]>(testList);
 
   const handleSumbit = () => {
     if (item) {
@@ -30,32 +36,36 @@ export default function App() {
       setItem("");
     }
   };
-
   return (
-    <ScrollView
+    <FlatList
+      data={ShoppingItemList}
       style={styles.container}
-      contentContainerStyle={{ alignItems: "center", paddingBottom: 24 }}
-    >
-      <TextInput
-        placeholder="Eg. Add Coffee"
-        value={item}
-        onChangeText={setItem}
-        onSubmitEditing={handleSumbit}
-        style={{
-          borderColor: "#808080",
-          borderWidth: 1,
-          padding: 12,
-          width: "90%",
-          marginBottom: 12,
-          fontSize: 18,
-          borderRadius: 50,
-        }}
-      />
-      {ShoppingItemList.map((val) => (
-        <ShoppingList name={val.name} key={val.id} />
-      ))}
-      <StatusBar style="auto" />
-    </ScrollView>
+      contentContainerStyle={{ alignItems: "center" }}
+      stickyHeaderIndices={[0]}
+      renderItem={({ item }) => <ShoppingList name={item.name} />}
+      ListEmptyComponent={() => (
+        <View style={{ alignItems: "center" }}>
+          <Text>Your shopping list is empty</Text>
+        </View>
+      )}
+      ListHeaderComponent={
+        <TextInput
+          placeholder="Eg. Add Coffee"
+          value={item}
+          onChangeText={setItem}
+          onSubmitEditing={handleSumbit}
+          style={{
+            borderColor: "#808080",
+            borderWidth: 1,
+            fontSize: 18,
+            marginVertical: 20,
+            borderRadius: 50,
+            paddingHorizontal: 140,
+            paddingTop: 20,
+          }}
+        />
+      }
+    />
   );
 }
 
@@ -63,6 +73,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 20,
+    width: "100%",
   },
 });
