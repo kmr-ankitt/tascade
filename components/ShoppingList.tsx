@@ -1,18 +1,22 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 export default function ShoppingList({
   name,
   isCompleted,
+  onDelete,
+  onToggleComplete,
 }: {
   name: string;
   isCompleted?: boolean;
+  onDelete: () => void;
+  onToggleComplete?: () => void;
 }) {
   const handleDelete = () => {
     Alert.alert("Delete", `Are you sure you want to delete ${name}?`, [
       {
         text: "yes",
-        onPress: () => console.log("Ok deleting"),
+        onPress: () => onDelete(),
         style: "destructive",
       },
       {
@@ -22,7 +26,8 @@ export default function ShoppingList({
     ]);
   };
   return (
-    <View
+    <Pressable
+      onPress={onToggleComplete}
       style={{
         borderColor: "#1a759f",
         borderBottomWidth: 2,
@@ -32,7 +37,7 @@ export default function ShoppingList({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: isCompleted ? "#D3D3D3" : "",
+        backgroundColor: isCompleted ? "#D3D3D3" : "#fff",
       }}
     >
       <Feather
@@ -56,6 +61,6 @@ export default function ShoppingList({
           color={!isCompleted ? "#ee6055" : "#a1a1ad"}
         />
       </TouchableOpacity>
-    </View>
+    </Pressable>
   );
 }

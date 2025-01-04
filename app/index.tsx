@@ -6,6 +6,7 @@ import { useState } from "react";
 type ShoppingListItemType = {
   id: string;
   name: string;
+  completedAtTime?: number;
 };
 
 const initalList: ShoppingListItemType[] = [
@@ -36,13 +37,39 @@ export default function App() {
       setItem("");
     }
   };
+
+  const handleDelete = (id: string) => {
+    const newShoppingList = ShoppingItemList.filter((item) => item.id !== id);
+    setShoppingList(newShoppingList);
+  };
+
+  const handleToggleComplete = (id: string) => {
+    const newShoppingList = ShoppingItemList.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          completedAtTime: item.completedAtTime ? undefined : Date.now(),
+        };
+      }
+      return item;
+    });
+    setShoppingList(newShoppingList);
+  };
+
   return (
     <FlatList
       data={ShoppingItemList}
       style={[styles.container, { width: "100%" }]}
       contentContainerStyle={{ width: "100%", paddingHorizontal: 20 }}
       stickyHeaderIndices={[0]}
-      renderItem={({ item }) => <ShoppingList name={item.name} />}
+      renderItem={({ item }) => (
+        <ShoppingList
+          name={item.name}
+          onDelete={() => handleDelete(item.id)}
+          onToggleComplete={() => handleToggleComplete(item.id)}
+          isCompleted={item.completedAtTime ? true : false}
+        />
+      )}
       ListEmptyComponent={() => (
         <View style={{ alignItems: "center" }}>
           <Text>Your shopping list is empty</Text>
