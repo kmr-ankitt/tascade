@@ -1,8 +1,16 @@
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  FlatList,
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import "../global.css";
 import ShoppingList from "../components/ShoppingList";
 import { useEffect, useState } from "react";
 import { getData, saveData } from "../utils/storage";
+import * as Haptics from "expo-haptics";
 
 type ShoppingListItemType = {
   id: string;
@@ -50,6 +58,7 @@ export default function App() {
     const fetchShoppingList = async () => {
       const newShoppingList = await getData(shoppingListKey);
       if (newShoppingList) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setShoppingList(newShoppingList);
       }
     };
@@ -66,21 +75,31 @@ export default function App() {
         },
         ...ShoppingItemList,
       ];
-      setShoppingList(newShoppingList);
+
       saveData(shoppingListKey, newShoppingList);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      setShoppingList(newShoppingList);
       setItem("");
     }
   };
 
   const handleDelete = (id: string) => {
     const newShoppingList = ShoppingItemList.filter((item) => item.id !== id);
-    setShoppingList(newShoppingList);
+
     saveData(shoppingListKey, newShoppingList);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setShoppingList(newShoppingList);
   };
 
   const handleToggleComplete = (id: string) => {
     const newShoppingList = ShoppingItemList.map((item) => {
       if (item.id === id) {
+        if (item.completedAtTimestamp) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
         return {
           ...item,
           completedAtTimestamp: item.completedAtTimestamp
@@ -90,6 +109,8 @@ export default function App() {
       }
       return item;
     });
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setShoppingList(newShoppingList);
   };
 
