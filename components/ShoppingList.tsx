@@ -1,5 +1,5 @@
 import { AntDesign, Feather } from "@expo/vector-icons";
-import { Alert, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, Text, TouchableOpacity } from "react-native";
 
 export default function ShoppingList({
   name,
@@ -46,10 +46,13 @@ export default function ShoppingList({
         color={"#1a759f"}
       />
       <Text
+        numberOfLines={1}
         style={{
           fontSize: 22,
           textDecorationLine: isCompleted ? "line-through" : "none",
           color: isCompleted ? "#a1a1ad" : "",
+          flex: 1,
+          marginHorizontal: 10,
         }}
       >
         {name}

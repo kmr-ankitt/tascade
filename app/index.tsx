@@ -1,39 +1,73 @@
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import "../global.css";
 import ShoppingList from "../components/ShoppingList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getData, saveData } from "../utils/storage";
 
 type ShoppingListItemType = {
   id: string;
   name: string;
-  completedAtTime?: number;
+  completedAtTimestamp?: number;
+  lastUpdatedAtTimestamp: number;
 };
 
 const initalList: ShoppingListItemType[] = [
-  { id: "1", name: "Coffee" },
-  { id: "2", name: "Tea" },
-  { id: "3", name: "Chocolates" },
+  { id: "1", name: "Coffee", lastUpdatedAtTimestamp: Date.now() - 1000 },
+  { id: "2", name: "Tea", lastUpdatedAtTimestamp: Date.now() - 2000 },
+  { id: "3", name: "Chocolates", lastUpdatedAtTimestamp: Date.now() - 3000 },
 ];
-const testList: ShoppingListItemType[] = Array.from(
-  { length: 500 },
-  (_, index) => ({
-    id: (index + 1).toString(),
-    name: `Item ${index + 1}`,
-  })
-);
+
+const shoppingListKey = "shoppingList";
+
+function orderShoppingList(shoppingList: ShoppingListItemType[]) {
+  return shoppingList.sort((item1, item2) => {
+    if (item1.completedAtTimestamp && item2.completedAtTimestamp) {
+      return item2.completedAtTimestamp - item1.completedAtTimestamp;
+    }
+
+    if (item1.completedAtTimestamp && !item2.completedAtTimestamp) {
+      return 1;
+    }
+
+    if (!item1.completedAtTimestamp && item2.completedAtTimestamp) {
+      return -1;
+    }
+
+    if (!item1.completedAtTimestamp && !item2.completedAtTimestamp) {
+      return item2.lastUpdatedAtTimestamp - item1.lastUpdatedAtTimestamp;
+    }
+
+    return 0;
+  });
+}
 
 export default function App() {
   const [item, setItem] = useState("");
   const [ShoppingItemList, setShoppingList] =
     useState<ShoppingListItemType[]>(initalList);
 
+  useEffect(() => {
+    const fetchShoppingList = async () => {
+      const newShoppingList = await getData(shoppingListKey);
+      if (newShoppingList) {
+        setShoppingList(newShoppingList);
+      }
+    };
+    fetchShoppingList();
+  }, []);
+
   const handleSumbit = () => {
     if (item) {
       const newShoppingList: ShoppingListItemType[] = [
-        { id: new Date().toTimeString(), name: item },
+        {
+          id: new Date().toTimeString(),
+          name: item,
+          lastUpdatedAtTimestamp: Date.now(),
+        },
         ...ShoppingItemList,
       ];
       setShoppingList(newShoppingList);
+      saveData(shoppingListKey, newShoppingList);
       setItem("");
     }
   };
@@ -41,6 +75,7 @@ export default function App() {
   const handleDelete = (id: string) => {
     const newShoppingList = ShoppingItemList.filter((item) => item.id !== id);
     setShoppingList(newShoppingList);
+    saveData(shoppingListKey, newShoppingList);
   };
 
   const handleToggleComplete = (id: string) => {
@@ -48,7 +83,9 @@ export default function App() {
       if (item.id === id) {
         return {
           ...item,
-          completedAtTime: item.completedAtTime ? undefined : Date.now(),
+          completedAtTimestamp: item.completedAtTimestamp
+            ? undefined
+            : Date.now(),
         };
       }
       return item;
@@ -58,7 +95,7 @@ export default function App() {
 
   return (
     <FlatList
-      data={ShoppingItemList}
+      data={orderShoppingList(ShoppingItemList)}
       style={[styles.container, { width: "100%" }]}
       contentContainerStyle={{ width: "100%", paddingHorizontal: 20 }}
       stickyHeaderIndices={[0]}
@@ -67,7 +104,7 @@ export default function App() {
           name={item.name}
           onDelete={() => handleDelete(item.id)}
           onToggleComplete={() => handleToggleComplete(item.id)}
-          isCompleted={item.completedAtTime ? true : false}
+          isCompleted={item.completedAtTimestamp ? true : false}
         />
       )}
       ListEmptyComponent={() => (
